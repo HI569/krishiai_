@@ -1,0 +1,1 @@
+Replace the scoring adapter in routes/crop.py with a trained Random Forest/XGBoost pipeline. Suggested training columns: N, P, K, pH, temperature, humidity, rainfall, season and location-derived features. Persist the fitted pipeline with joblib and expose inference through a service layer.

@@ -1,0 +1,1 @@
+Place curated crop cultivation guides, soil references, disease fact sheets, irrigation guidance and government agricultural resources here. Do not ingest unverified advice. Build a metadata-rich vector index for RAG in production.

@@ -1,0 +1,1 @@
+Replace the demo adapter in routes/disease.py with a TensorFlow/Keras or PyTorch transfer-learning model (MobileNet/EfficientNet/ResNet). Validate image quality before inference and return a calibrated confidence plus an explicit "possible diagnosis" label.
