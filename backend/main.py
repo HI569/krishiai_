@@ -116,4 +116,12 @@ if FRONTEND_DIST:
         if full_path and os.path.isfile(target):
             return FileResponse(target)
         # Otherwise fallback to index.html for Angular client-side routing
-        return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+        return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting KrishiAI Server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
