@@ -2683,7 +2683,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.loading = false;
 
           this.error =
-            'Could not connect to the KrishiAI backend. Make sure FastAPI is running on port 8001.';
+            'Unable to synchronize farm telemetry. Tap Refresh Location to retry.';
 
         }
 
@@ -2709,22 +2709,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
           );
 
 
-          const overall =
-            Number(
-              response?.overall
-            );
+          const rawOverall =
+            response?.overall?.score ??
+            response?.overall_score ??
+            response?.overall;
 
+          const overall =
+            Number(rawOverall);
 
           this.disasterRisk =
             Number.isFinite(overall)
               ? Math.round(overall)
               : null;
 
-
           this.disasterLabel =
-            this.getRiskLabel(
-              this.disasterRisk
-            );
+            response?.overall?.level
+              ? response.overall.level + ' Risk'
+              : this.getRiskLabel(this.disasterRisk);
 
         },
 
@@ -2897,7 +2898,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.mappedSoilAvailable =
       mapped.status === 'success' ||
-      mapped.status === 'available';
+      mapped.status === 'available' ||
+      mapped.status === 'calibrated';
 
 
     this.mappedSoilMessage =

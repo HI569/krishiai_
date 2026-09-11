@@ -785,7 +785,7 @@ this.farmService.analyzeSoil(lat, lon)
           );
 
           this.error =
-            'Could not connect to the KrishiAI backend. Make sure FastAPI is running on port 8001.';
+            err?.error?.detail || 'Unable to synchronize soil telemetry. Please tap Refresh Live.';
         }
       });
   }

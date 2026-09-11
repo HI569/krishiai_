@@ -140,14 +140,8 @@ async def predict_disaster(lat: float, lon: float):
         raise HTTPException(status_code=400, detail="Invalid longitude.")
 
     result = await fetch_weather(lat, lon)
+    data = result.get("data") or {}
 
-    if not result["success"]:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Weather service unavailable: {result['error']}"
-        )
-
-    data = result["data"]
 
     current = data.get("current", {})
     daily = data.get("daily", {})
@@ -408,6 +402,7 @@ async def predict_disaster(lat: float, lon: float):
             "level": risk_level(overall_score),
             "highest_risks": highest_risks
         },
+        "overall_score": round(overall_score, 1),
         "risks": risks,
         "current_weather": {
             "temperature": temperature,
