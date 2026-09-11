@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, HTTPException
-import httpx
 from location_data import search_locations, nearest_location
+from weather_cache import fetch_weather
 router = APIRouter()
 
 INDIAN_LOCATIONS = [
@@ -140,8 +140,6 @@ async def predict_disaster(lat: float, lon: float):
         raise HTTPException(status_code=400, detail="Invalid longitude.")
 
     params = {
-        "latitude": lat,
-        "longitude": lon,
         "current": (
             "temperature_2m,"
             "relative_humidity_2m,"
@@ -160,20 +158,15 @@ async def predict_disaster(lat: float, lon: float):
         "timezone": "auto"
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.get(
-                "https://api.open-meteo.com/v1/forecast",
-                params=params
-            )
-            response.raise_for_status()
-            data = response.json()
+    result = await fetch_weather(lat, lon, params)
 
-    except httpx.HTTPError as exc:
+    if not result["success"]:
         raise HTTPException(
             status_code=502,
-            detail=f"Weather service unavailable: {exc}"
+            detail=f"Weather service unavailable: {result['error']}"
         )
+
+    data = result["data"]
 
     current = data.get("current", {})
     daily = data.get("daily", {})
