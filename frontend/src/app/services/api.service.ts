@@ -7,7 +7,22 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  private baseUrl = 'http://127.0.0.1:8001/api';
+  private get baseUrl(): string {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      // On any deployed cloud domain (e.g. onrender.com, vercel.app, etc.)
+      if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+        return '/api';
+      }
+      // On local Angular dev server (:4200)
+      if (window.location.port === '4200') {
+        return 'http://127.0.0.1:8001/api';
+      }
+      // Direct local production / container
+      return '/api';
+    }
+    return '/api';
+  }
 
   constructor(private http: HttpClient) {}
 
