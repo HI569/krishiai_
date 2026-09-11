@@ -139,26 +139,7 @@ async def predict_disaster(lat: float, lon: float):
     if not (-180 <= lon <= 180):
         raise HTTPException(status_code=400, detail="Invalid longitude.")
 
-    params = {
-        "current": (
-            "temperature_2m,"
-            "relative_humidity_2m,"
-            "precipitation,"
-            "rain,"
-            "wind_speed_10m,"
-            "weather_code"
-        ),
-        "daily": (
-            "temperature_2m_max,"
-            "temperature_2m_min,"
-            "precipitation_sum,"
-            "wind_speed_10m_max"
-        ),
-        "forecast_days": 7,
-        "timezone": "auto"
-    }
-
-    result = await fetch_weather(lat, lon, params)
+    result = await fetch_weather(lat, lon)
 
     if not result["success"]:
         raise HTTPException(
@@ -444,7 +425,7 @@ async def predict_disaster(lat: float, lon: float):
             "max_wind": max_wind
         },
         "model": "KrishiAI Weather Risk Engine",
-        "data_source": "Open-Meteo",
+        "data_source": "wttr.in / Open-Meteo",
         "warning": (
             "This is a weather-based risk estimate for early warning. "
             "It is not a guaranteed prediction of a disaster."

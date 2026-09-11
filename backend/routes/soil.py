@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from weather_cache import fetch_weather
+from weather_cache import fetch_soil_weather
 
 router = APIRouter()
 
@@ -17,36 +17,7 @@ async def analyze_soil(lat: float, lon: float):
     if not (-180 <= lon <= 180):
         raise HTTPException(status_code=400, detail="Invalid longitude")
 
-    params = {
-        "current": ",".join([
-            "temperature_2m",
-            "relative_humidity_2m",
-            "precipitation",
-            "rain",
-            "wind_speed_10m",
-            "weather_code",
-            "soil_temperature_0cm",
-            "soil_temperature_6cm",
-            "soil_temperature_18cm",
-            "soil_temperature_54cm",
-            "soil_moisture_0_to_1cm",
-            "soil_moisture_1_to_3cm",
-            "soil_moisture_3_to_9cm",
-            "soil_moisture_9_to_27cm",
-            "soil_moisture_27_to_81cm",
-        ]),
-        "daily": ",".join([
-            "temperature_2m_max",
-            "temperature_2m_min",
-            "precipitation_sum",
-            "precipitation_hours",
-            "wind_speed_10m_max",
-        ]),
-        "timezone": "auto",
-        "forecast_days": 7,
-    }
-
-    result = await fetch_weather(lat, lon, params)
+    result = await fetch_soil_weather(lat, lon)
 
     if not result["success"]:
         raise HTTPException(
