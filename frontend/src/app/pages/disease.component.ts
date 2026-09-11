@@ -1098,16 +1098,24 @@ export class DiseaseComponent {
   }
 
   getSeverityClass(): string {
-    const conf = this.getConfidence() || 80;
-    if (conf > 90) return 'severity-severe';
-    if (conf > 75) return 'severity-moderate';
+    const s = (this.result?.severity || '').toLowerCase();
+    if (s === 'high') return 'severity-severe';
+    if (s === 'moderate') return 'severity-moderate';
+    if (s === 'low') return 'severity-mild';
+    const conf = this.getConfidence() || 0;
+    if (conf > 80) return 'severity-severe';
+    if (conf > 50) return 'severity-moderate';
     return 'severity-mild';
   }
 
   getSeverityText(): string {
-    const conf = this.getConfidence() || 80;
-    if (conf > 90) return '🔴 SEVERE INFECTION';
-    if (conf > 75) return '🟡 MODERATE SPREAD';
+    const s = (this.result?.severity || '').toLowerCase();
+    if (s === 'high') return '🔴 SEVERE INFECTION';
+    if (s === 'moderate') return '🟡 MODERATE SPREAD';
+    if (s === 'low') return '🟢 MILD / EARLY STAGE';
+    const conf = this.getConfidence() || 0;
+    if (conf > 80) return '🔴 SEVERE INFECTION';
+    if (conf > 50) return '🟡 MODERATE SPREAD';
     return '🟢 MILD / EARLY STAGE';
   }
 
@@ -1123,6 +1131,15 @@ export class DiseaseComponent {
 
   getSolution(): string {
     if (!this.result) return '';
+    // Prefer Gemini's organic + chemical treatments
+    const organic = this.result.organic_treatment;
+    const chemical = this.result.chemical_treatment;
+    if (organic || chemical) {
+      const parts: string[] = [];
+      if (organic) parts.push('🌿 Organic: ' + this.toText(organic));
+      if (chemical) parts.push('💊 Chemical: ' + this.toText(chemical));
+      return parts.join('\n');
+    }
     return this.toText(this.result.solution ?? this.result.treatment ?? this.result.remedy ?? this.result.management ?? this.result.actions);
   }
 
