@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  krishiai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: krishiai_app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=gemini-flash-lite-latest
+    restart: unless-stopped

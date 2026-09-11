@@ -24,6 +24,10 @@ interface GuideChapter {
   imports: [CommonModule, FormsModule],
   template: `
     <div class="guide-page">
+      <!-- AMBIENT GLOWS -->
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+
 
       <!-- HEADER -->
       <header class="guide-header">
@@ -394,8 +398,7 @@ interface GuideChapter {
     </div>
   `,
 
-  styles: [`
-
+    styles: [`
     * {
       box-sizing: border-box;
     }
@@ -407,9 +410,12 @@ interface GuideChapter {
     }
 
     .guide-page {
-      min-height: 100vh;
-      background: #f6f8f5;
-      color: #17352a;
+      min-height: calc(100vh - 70px);
+      background: #08120f;
+      color: #f3f9f4;
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
     }
 
     .content-width {
@@ -417,21 +423,39 @@ interface GuideChapter {
       margin: 0 auto;
     }
 
+    /* AMBIENT GLOWS */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 450px;
+      height: 450px;
+      top: -120px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(0, 255, 148, 0.12), transparent 70%);
+    }
+    .orb-2 {
+      width: 360px;
+      height: 360px;
+      bottom: 60px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(125, 255, 111, 0.08), transparent 70%);
+    }
 
     /* =========================
        HEADER
     ========================= */
-
     .guide-header {
-      background: linear-gradient(
-        135deg,
-        #073b2a 0%,
-        #0a533b 55%,
-        #0c6846 100%
-      );
-
-      color: white;
-      padding: 54px 0 58px;
+      background: linear-gradient(180deg, #0d1612 0%, #08120f 100%);
+      border-bottom: 1px solid #1c2720;
+      color: #f3f9f4;
+      padding: 50px 0 54px;
+      position: relative;
+      z-index: 1;
     }
 
     .header-content {
@@ -444,64 +468,75 @@ interface GuideChapter {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
+      gap: 16px;
       margin-bottom: 14px;
     }
 
     .book-icon {
-      width: 56px;
-      height: 56px;
+      width: 64px;
+      height: 64px;
       display: grid;
       place-items: center;
-      border-radius: 16px;
-      background: rgba(255,255,255,.13);
-      font-size: 29px;
+      border-radius: 18px;
+      background: rgba(125, 255, 111, 0.1);
+      border: 1px solid rgba(125, 255, 111, 0.3);
+      font-size: 32px;
+      box-shadow: 0 10px 25px rgba(0, 255, 148, 0.18);
     }
 
     .eyebrow {
-      font-size: 11px;
+      color: #8cff78;
+      font-size: 0.72rem;
       font-weight: 800;
-      letter-spacing: 2px;
-      opacity: .72;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
       text-align: left;
     }
 
     .guide-header h1 {
-      margin: 2px 0 0;
-      font-size: clamp(36px, 5vw, 52px);
-      line-height: 1.05;
-      letter-spacing: -1.5px;
+      margin: 0;
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+      font-weight: 850;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #7dff6f 0%, #36e89a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
-      max-width: 680px;
-      margin: 20px auto 30px;
-      font-size: 16px;
-      line-height: 1.65;
-      color: rgba(255,255,255,.82);
+      margin: 12px auto 26px;
+      max-width: 650px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #b7c8bc;
     }
 
-
     /* SEARCH */
-
     .search-box {
       width: min(760px, 100%);
       height: 62px;
       margin: auto;
       display: flex;
       align-items: center;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.18);
+      background: #121815;
+      border: 1px solid #303d34;
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
       padding: 0 18px;
+      transition: all 0.2s;
+    }
+    .search-box:focus-within {
+      border-color: #7dff6f;
+      box-shadow: 0 0 0 3px rgba(125, 255, 111, 0.15);
     }
 
     .search-icon {
-      color: #537167;
-      font-size: 30px;
+      color: #7dff6f;
+      font-size: 26px;
       line-height: 1;
       margin-right: 12px;
-      transform: rotate(-15deg);
     }
 
     .search-box input {
@@ -509,53 +544,61 @@ interface GuideChapter {
       min-width: 0;
       border: none;
       outline: none;
-      font-size: 16px;
-      color: #183a2f;
+      font-size: 1rem;
+      color: #f1f7f2;
       background: transparent;
+      font-weight: 600;
     }
 
     .search-box input::placeholder {
-      color: #91a29b;
+      color: #6a7e72;
     }
 
     .clear-btn {
       border: none;
-      background: #edf3ef;
+      background: #1c2720;
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
-      color: #456158;
+      color: #7dff6f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .search-hint {
       margin-top: 14px;
-      font-size: 12px;
-      color: rgba(255,255,255,.7);
+      font-size: 0.8rem;
+      color: #8fa395;
     }
 
     .search-hint button {
-      border: none;
-      background: rgba(255,255,255,.1);
-      color: white;
+      border: 1px solid #28372d;
+      background: #0f1612;
+      color: #8cff78;
       border-radius: 20px;
-      padding: 6px 11px;
-      margin-left: 5px;
+      padding: 5px 12px;
+      margin-left: 6px;
       cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
     .search-hint button:hover {
-      background: rgba(255,255,255,.18);
+      background: rgba(125, 255, 111, 0.12);
+      border-color: #7dff6f;
     }
-
 
     /* =========================
        LIBRARY
     ========================= */
-
     .library {
-      padding: 52px 0 80px;
+      padding: 50px 0 80px;
+      position: relative;
+      z-index: 1;
     }
 
     .section-heading {
@@ -567,139 +610,160 @@ interface GuideChapter {
 
     .small-label {
       display: block;
-      color: #668077;
-      font-size: 10px;
-      letter-spacing: 1.7px;
+      color: #8cff78;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
       font-weight: 800;
-      margin-bottom: 7px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
     }
 
     .section-heading h2 {
       margin: 0;
-      font-size: 29px;
-      color: #123d2f;
+      font-size: 1.8rem;
+      color: #ffffff;
+      font-weight: 850;
     }
 
     .chapter-count {
-      color: #678078;
-      font-size: 13px;
+      color: #798f80;
+      font-size: 0.85rem;
+      font-weight: 600;
     }
 
-
     /* CHAPTER CARDS */
-
     .chapter-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
+      gap: 20px;
     }
 
     .chapter-card {
       position: relative;
       text-align: left;
-      border: 1px solid #e1e9e4;
-      background: white;
-      border-radius: 18px;
-      padding: 25px;
-      min-height: 230px;
+      border: 1px solid #253129;
+      background: #121815;
+      border-radius: 22px;
+      padding: 24px;
       cursor: pointer;
-      transition:
-        transform .18s ease,
-        box-shadow .18s ease,
-        border-color .18s ease;
-      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
     }
 
     .chapter-card:hover {
       transform: translateY(-4px);
-      border-color: #a9c8b9;
-      box-shadow: 0 15px 35px rgba(20,60,45,.09);
+      border-color: rgba(125, 255, 111, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 255, 148, 0.15);
+      background: #151d18;
     }
 
     .chapter-number {
       position: absolute;
-      top: 17px;
-      right: 20px;
-      font-size: 12px;
-      color: #b3c2bc;
-      font-weight: 700;
+      top: 18px;
+      right: 18px;
+      font-size: 0.7rem;
+      font-weight: 850;
+      color: #7dff6f;
+      background: rgba(125, 255, 111, 0.1);
+      border: 1px solid rgba(125, 255, 111, 0.25);
+      padding: 3px 10px;
+      border-radius: 12px;
     }
 
     .chapter-icon {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      background: #edf6f0;
-      font-size: 27px;
-      margin-bottom: 18px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(125, 255, 111, 0.1);
+      border: 1px solid rgba(125, 255, 111, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    .chapter-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .chapter-content h3 {
-      margin: 0 0 9px;
-      color: #123c2e;
-      font-size: 19px;
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 800;
     }
 
     .chapter-content p {
       margin: 0;
-      color: #6a7d75;
-      font-size: 13px;
+      color: #92a397;
+      font-size: 0.88rem;
       line-height: 1.55;
-      min-height: 42px;
+      flex: 1;
     }
 
     .chapter-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 22px;
-      color: #789087;
-      font-size: 12px;
-      font-weight: 600;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #1f2b23;
+      color: #798f80;
+      font-size: 0.8rem;
+      font-weight: 700;
     }
 
     .arrow {
-      font-size: 20px;
-      color: #087f4e;
+      font-size: 18px;
+      color: #7dff6f;
+      transition: transform 0.2s;
     }
 
+    .chapter-card:hover .arrow {
+      transform: translateX(4px);
+    }
 
-    /* FEATURED */
-
+    /* FEATURED CARD */
     .featured {
-      margin-top: 32px;
-      background: #eaf4ee;
-      border: 1px solid #d5e8dc;
-      border-radius: 20px;
-      padding: 27px;
+      margin-top: 36px;
+      background: linear-gradient(145deg, #152219, #0f1612);
+      border: 1px solid rgba(125, 255, 111, 0.3);
+      border-radius: 22px;
+      padding: 28px 32px;
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 24px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
     }
 
     .featured-icon {
-      width: 58px;
-      height: 58px;
+      width: 64px;
+      height: 64px;
       flex: 0 0 auto;
       display: grid;
       place-items: center;
-      background: white;
-      border-radius: 16px;
-      font-size: 27px;
+      background: rgba(125, 255, 111, 0.12);
+      border: 1px solid rgba(125, 255, 111, 0.3);
+      border-radius: 18px;
+      font-size: 32px;
     }
 
     .featured h2 {
-      margin: 0 0 5px;
-      color: #164635;
-      font-size: 20px;
+      margin: 0 0 6px;
+      color: #ffffff;
+      font-size: 1.4rem;
+      font-weight: 850;
     }
 
     .featured p {
       margin: 0;
-      color: #60776d;
-      font-size: 13px;
+      color: #b7c8bc;
+      font-size: 0.92rem;
       line-height: 1.5;
     }
 
@@ -707,21 +771,29 @@ interface GuideChapter {
       margin-left: auto;
       flex: 0 0 auto;
       border: none;
-      border-radius: 10px;
-      background: #087f4e;
-      color: white;
-      padding: 12px 17px;
-      font-weight: 700;
+      border-radius: 12px;
+      background: #7dff6f;
+      color: #07120a;
+      padding: 14px 22px;
+      font-weight: 850;
+      font-size: 0.95rem;
       cursor: pointer;
+      box-shadow: 0 8px 20px rgba(125, 255, 111, 0.25);
+      transition: all 0.2s;
     }
 
+    .featured button:hover {
+      background: #8eff80;
+      transform: translateY(-2px);
+    }
 
     /* =========================
        SEARCH RESULTS
     ========================= */
-
     .results-section {
       padding: 45px 0 75px;
+      position: relative;
+      z-index: 1;
     }
 
     .results-heading {
@@ -733,217 +805,225 @@ interface GuideChapter {
 
     .results-heading h2 {
       margin: 0;
-      color: #143e30;
-      font-size: 28px;
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 850;
     }
 
     .back-btn {
-      border: 1px solid #d8e4de;
-      background: white;
-      color: #315c4c;
-      border-radius: 10px;
-      padding: 10px 15px;
+      border: 1px solid #28372d;
+      background: #121815;
+      color: #7dff6f;
+      border-radius: 12px;
+      padding: 10px 18px;
       cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 750;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: #18221b;
+      border-color: #7dff6f;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      background: #121815;
+      border: 1px solid #253129;
+      border-radius: 22px;
+    }
+    .no-result-icon {
+      font-size: 44px;
+      margin-bottom: 12px;
+    }
+    .no-results h3 {
+      color: #ffffff;
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+    }
+    .no-results p {
+      color: #92a397;
+      margin: 0;
+      font-size: 0.9rem;
     }
 
     .result-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
+      gap: 18px;
     }
 
     .result-card {
+      background: #121815;
+      border: 1px solid #253129;
+      border-radius: 20px;
+      padding: 22px;
       display: flex;
       gap: 16px;
       text-align: left;
-      border: 1px solid #e0e8e3;
-      background: white;
-      border-radius: 15px;
-      padding: 19px;
       cursor: pointer;
-      transition: .18s ease;
+      transition: all 0.2s;
     }
-
     .result-card:hover {
-      border-color: #a7c7b7;
+      border-color: #7dff6f;
+      background: #151d18;
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(0,0,0,.06);
     }
-
     .result-icon {
-      width: 45px;
-      height: 45px;
+      font-size: 32px;
       flex: 0 0 auto;
-      display: grid;
-      place-items: center;
-      background: #edf6f0;
-      border-radius: 12px;
-      font-size: 22px;
     }
-
+    .result-body {
+      flex: 1;
+    }
     .result-category {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #7b9087;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #8cff78;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .result-body h3 {
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 750;
+    }
+    .result-body p {
+      margin: 0 0 12px;
+      color: #92a397;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .read-link {
+      color: #7dff6f;
+      font-size: 0.8rem;
       font-weight: 800;
     }
 
-    .result-body h3 {
-      margin: 5px 0;
-      color: #163f31;
-      font-size: 17px;
-    }
-
-    .result-body p {
-      margin: 0;
-      color: #6b7d76;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .read-link {
-      display: inline-block;
-      margin-top: 10px;
-      color: #087f4e;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .no-results {
-      background: white;
-      border: 1px solid #e3eae6;
-      border-radius: 18px;
-      text-align: center;
-      padding: 70px 20px;
-    }
-
-    .no-result-icon {
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
-
-    .no-results h3 {
-      margin: 0 0 8px;
-      color: #193f32;
-    }
-
-    .no-results p {
-      margin: 0;
-      color: #72847c;
-    }
-
-
     /* =========================
-       CHAPTER VIEW
+       CHAPTER READER VIEW
     ========================= */
-
     .chapter-view {
-      padding: 35px 0 80px;
+      padding: 40px 0 80px;
+      position: relative;
+      z-index: 1;
     }
 
     .chapter-back {
-      border: none;
-      background: transparent;
-      color: #39705a;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 8px 0;
+      background: #121815;
+      border: 1px solid #28372d;
+      color: #7dff6f;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      font-weight: 750;
       cursor: pointer;
-      margin-bottom: 22px;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+    }
+    .chapter-back:hover {
+      background: #18221b;
+      border-color: #7dff6f;
     }
 
     .chapter-hero {
       display: flex;
       align-items: center;
-      gap: 22px;
-      background: white;
-      border: 1px solid #e0e8e3;
-      border-radius: 20px;
-      padding: 30px;
+      gap: 24px;
+      background: #121815;
+      border: 1px solid #253129;
+      border-radius: 22px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
     }
 
     .chapter-hero-icon {
-      width: 78px;
-      height: 78px;
+      width: 82px;
+      height: 82px;
       flex: 0 0 auto;
       display: grid;
       place-items: center;
-      border-radius: 20px;
-      background: #eaf5ee;
-      font-size: 38px;
+      border-radius: 22px;
+      background: rgba(125, 255, 111, 0.1);
+      border: 1px solid rgba(125, 255, 111, 0.3);
+      font-size: 42px;
     }
 
     .chapter-hero h1 {
-      margin: 0 0 7px;
-      color: #123d2f;
-      font-size: 34px;
+      margin: 2px 0 8px;
+      color: #ffffff;
+      font-size: 2.2rem;
+      font-weight: 850;
     }
 
     .chapter-hero p {
       margin: 0;
-      color: #697d74;
-      line-height: 1.55;
+      color: #b7c8bc;
+      line-height: 1.6;
+      font-size: 0.98rem;
     }
 
-
-    /* NAVIGATION */
-
+    /* SECTION NAVIGATION STICKY */
     .section-navigation {
       position: sticky;
-      top: 0;
+      top: 70px;
       z-index: 10;
       margin: 18px 0;
-      padding: 13px;
+      padding: 14px;
       display: flex;
-      gap: 7px;
+      gap: 8px;
       align-items: center;
       overflow-x: auto;
-      background: rgba(246,248,245,.94);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #e3eae5;
+      background: rgba(8, 18, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #212d25;
+      border-radius: 14px;
     }
 
     .nav-title {
       flex: 0 0 auto;
-      color: #789087;
-      font-size: 10px;
-      letter-spacing: 1px;
-      font-weight: 800;
+      color: #8cff78;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      font-weight: 850;
       margin-right: 6px;
     }
 
     .section-navigation button {
       flex: 0 0 auto;
-      border: 1px solid #dbe6e0;
-      background: white;
-      color: #47645a;
+      border: 1px solid #28372d;
+      background: #121815;
+      color: #b7c8bc;
       border-radius: 20px;
-      padding: 8px 12px;
-      font-size: 11px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .section-navigation button:hover {
-      background: #eaf5ee;
-      border-color: #b9d4c4;
-      color: #176143;
+      background: rgba(125, 255, 111, 0.12);
+      border-color: #7dff6f;
+      color: #7dff6f;
     }
 
-
-    /* CONTENT */
-
+    /* CHAPTER CONTENT AREA */
     .chapter-content-area {
-      background: white;
-      border: 1px solid #e0e8e3;
-      border-radius: 20px;
+      background: #121815;
+      border: 1px solid #253129;
+      border-radius: 22px;
       overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
     }
 
     .guide-section {
-      padding: 36px 40px;
-      border-bottom: 1px solid #e8eee9;
-      scroll-margin-top: 75px;
+      padding: 38px 42px;
+      border-bottom: 1px solid #1c2720;
+      scroll-margin-top: 130px;
     }
 
     .guide-section:last-child {
@@ -953,202 +1033,173 @@ interface GuideChapter {
     .section-title {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 18px;
     }
 
     .section-icon {
       width: 48px;
       height: 48px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      background: #eef6f1;
-      border-radius: 13px;
-      font-size: 23px;
+      border-radius: 14px;
+      background: rgba(125, 255, 111, 0.1);
+      border: 1px solid rgba(125, 255, 111, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
     }
 
     .section-number {
-      color: #7b9087;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.1em;
+      color: #8cff78;
+      display: block;
     }
 
     .section-title h2 {
       margin: 2px 0 0;
-      color: #153f31;
-      font-size: 23px;
+      font-size: 1.4rem;
+      color: #ffffff;
+      font-weight: 800;
     }
 
     .section-text p {
+      color: #b7c8bc;
+      font-size: 0.95rem;
+      line-height: 1.68;
       margin: 0 0 14px;
-      color: #526961;
-      line-height: 1.75;
-      font-size: 14px;
     }
-
-    .section-text p:last-child {
-      margin-bottom: 0;
-    }
-
-
-    /* TIPS */
 
     .tips-box {
-      margin-top: 23px;
-      background: #f2f8f4;
-      border-left: 4px solid #087f4e;
-      border-radius: 8px;
-      padding: 16px 19px;
+      margin-top: 20px;
+      background: #0d1410;
+      border: 1px solid rgba(125, 255, 111, 0.3);
+      border-radius: 14px;
+      padding: 18px 22px;
     }
 
     .tips-title {
-      font-size: 12px;
-      font-weight: 800;
-      color: #176143;
-      margin-bottom: 8px;
+      color: #7dff6f;
+      font-size: 0.85rem;
+      font-weight: 850;
+      margin-bottom: 10px;
     }
 
     .tips-box ul {
       margin: 0;
       padding-left: 20px;
-      color: #557067;
+      color: #d8e8dd;
     }
 
     .tips-box li {
-      margin: 5px 0;
-      font-size: 13px;
-      line-height: 1.5;
+      margin: 6px 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
     }
 
-
-    /* END */
-
+    /* CHAPTER END */
     .chapter-end {
-      margin-top: 25px;
-      padding: 40px 20px;
+      margin-top: 28px;
+      padding: 44px 24px;
       text-align: center;
-      background: #edf6f0;
-      border-radius: 18px;
+      background: #121815;
+      border: 1px solid #253129;
+      border-radius: 22px;
     }
 
     .chapter-end > div {
-      font-size: 32px;
+      font-size: 38px;
     }
 
     .chapter-end h2 {
-      margin: 8px 0 6px;
-      color: #194736;
+      margin: 10px 0 6px;
+      color: #ffffff;
+      font-size: 1.4rem;
+      font-weight: 800;
     }
 
     .chapter-end p {
-      color: #667b72;
-      font-size: 13px;
+      color: #92a397;
+      font-size: 0.9rem;
+      margin: 0 0 18px;
     }
 
     .chapter-end button {
-      margin-top: 10px;
       border: none;
-      border-radius: 10px;
-      padding: 11px 17px;
-      background: #087f4e;
-      color: white;
-      font-weight: 700;
+      border-radius: 12px;
+      padding: 13px 24px;
+      background: #7dff6f;
+      color: #07120a;
+      font-weight: 850;
+      font-size: 0.92rem;
       cursor: pointer;
+      box-shadow: 0 8px 20px rgba(125, 255, 111, 0.25);
+      transition: all 0.2s;
+    }
+    .chapter-end button:hover {
+      background: #8eff80;
+      transform: translateY(-2px);
     }
 
-
     /* FOOTER */
-
     .guide-footer {
-      border-top: 1px solid #dfe8e2;
-      background: white;
-      padding: 24px 0;
+      border-top: 1px solid #1c2720;
+      background: #08120f;
+      padding: 28px 0;
     }
 
     .guide-footer .content-width {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 30px;
-      color: #7b8d86;
-      font-size: 11px;
+      color: #728578;
+      font-size: 0.8rem;
       line-height: 1.5;
     }
 
     .guide-footer strong {
       display: block;
-      color: #315749;
-      margin-bottom: 3px;
+      color: #b7c8bc;
+      margin-bottom: 2px;
+      font-size: 0.85rem;
     }
 
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
+    /* RESPONSIVE */
     @media (max-width: 900px) {
-
       .chapter-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-
       .result-grid {
         grid-template-columns: 1fr;
       }
-
     }
 
     @media (max-width: 650px) {
-
-      .content-width,
-      .header-content {
-        width: min(100% - 30px, 1180px);
-      }
-
-      .guide-header {
-        padding: 35px 0 40px;
-      }
-
       .chapter-grid {
         grid-template-columns: 1fr;
       }
-
-      .section-heading {
-        align-items: start;
-        flex-direction: column;
-        gap: 8px;
-      }
-
       .featured {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
       }
-
       .featured button {
         margin-left: 0;
       }
-
       .chapter-hero {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
       }
-
       .guide-section {
-        padding: 28px 22px;
+        padding: 28px 20px;
       }
-
-      .chapter-hero h1 {
-        font-size: 28px;
-      }
-
       .guide-footer .content-width {
         flex-direction: column;
         gap: 12px;
       }
-
     }
-
   `]
 })
 export class KnowledgeComponent {

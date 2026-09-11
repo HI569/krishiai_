@@ -38,9 +38,45 @@ export const routes: Routes = [
   },
 
   {
+    path: 'disaster',
+    loadComponent: () =>
+      import('./pages/disaster/disaster').then(m => m.Disaster)
+  },
+
+  {
     path: 'assistant',
     loadComponent: () =>
       import('./pages/assistant.component').then(m => m.AssistantComponent)
+  },
+
+  {
+    path: 'fertilizer',
+    loadComponent: () =>
+      import('./pages/fertilizer.component').then(m => m.FertilizerComponent)
+  },
+
+  {
+    path: 'yield',
+    loadComponent: () =>
+      import('./pages/yield.component').then(m => m.YieldComponent)
+  },
+
+  {
+    path: 'weather',
+    loadComponent: () =>
+      import('./pages/weather.component').then(m => m.WeatherComponent)
+  },
+
+  {
+    path: 'mandi',
+    loadComponent: () =>
+      import('./pages/mandi.component').then(m => m.MandiComponent)
+  },
+
+  {
+    path: 'health-card',
+    loadComponent: () =>
+      import('./pages/health-card.component').then(m => m.HealthCardComponent)
   },
 
   {

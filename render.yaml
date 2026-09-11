@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: krishiai
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: PORT
+        value: 10000

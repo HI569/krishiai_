@@ -1,0 +1,493 @@
+<div class="disaster-page">
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">KRISHIAI • EARLY WARNING</span>
+      <h1>Disaster Prediction</h1>
+      <p>
+        Get a weather-based early warning for your farm using live
+        weather forecasts.
+      </p>
+    </div>
+
+    <div class="hero-icon">⚠️</div>
+  </section>
+
+
+  <section class="location-card">
+
+    <div class="location-title">
+      <div class="location-icon">📍</div>
+
+      <div>
+        <h2>Farm Location</h2>
+        <p>Enter your farm coordinates</p>
+      </div>
+    </div>
+
+    <div class="coordinates">
+<div class="location-search">
+  <label for="locationSearch">Search Location</label>
+
+  <div class="search-row">
+    <input
+      id="locationSearch"
+      type="text"
+      [(ngModel)]="locationQuery"
+      placeholder="e.g. Ludhiana, Amritsar, Delhi"
+      (keyup.enter)="searchLocation()"
+    />
+
+    <button
+      type="button"
+      (click)="searchLocation()"
+      [disabled]="searchingLocation"
+    >
+      {{ searchingLocation ? 'Searching...' : 'Find' }}
+    </button>
+  </div>
+
+  <div class="location-results" *ngIf="locationResults.length">
+    <button
+      type="button"
+      class="location-result"
+      *ngFor="let location of locationResults"
+      (click)="selectLocation(location)"
+    >
+      <span>📍</span>
+
+      <span>
+        <strong>{{ location.name }}</strong>
+        <small>
+          {{ location.state }}, {{ location.country }}
+        </small>
+      </span>
+    </button>
+  </div>
+</div>
+
+<div class="selected-location" *ngIf="selectedLocation">
+  📍 <strong>{{ selectedLocation }}</strong>
+</div>
+
+      <label>
+        Latitude
+        <input
+          type="number"
+          [(ngModel)]="latitude"
+          step="0.0001"
+          placeholder="30.901"
+        />
+      </label>
+
+      <label>
+        Longitude
+        <input
+          type="number"
+          [(ngModel)]="longitude"
+          step="0.0001"
+          placeholder="75.8573"
+        />
+      </label>
+
+      <button
+        class="predict-btn"
+        (click)="predict()"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Analyzing...' : 'Predict Risk' }}
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <div class="loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Analyzing live weather conditions...</span>
+  </div>
+
+
+  <div class="error" *ngIf="error">
+    <strong>Unable to analyze risk</strong>
+    <p>{{ error }}</p>
+  </div>
+
+
+  <ng-container *ngIf="data && !loading">
+
+    <section class="overall-card">
+
+      <div class="overall-info">
+        <span class="section-label">OVERALL FARM RISK</span>
+
+        <h2>
+          {{ data.overall.level }}
+        </h2>
+
+        <p>
+          Highest detected risk:
+          <strong>
+            {{ formatName(data.overall.highest_risks[0]) }}
+          </strong>
+        </p>
+      </div>
+
+      <div
+        class="risk-score"
+        [class.low]="data.overall.level === 'LOW'"
+        [class.moderate]="data.overall.level === 'MODERATE'"
+        [class.high]="data.overall.level === 'HIGH'"
+      >
+        <strong>{{ data.overall.score }}</strong>
+        <span>/ 100</span>
+      </div>
+
+    </section>
+
+
+    <section class="weather-card">
+
+      <div class="card-heading">
+        <div>
+          <span class="section-label">LIVE CONDITIONS</span>
+          <h2>Current Weather</h2>
+        </div>
+      </div>
+
+      <div class="weather-grid">
+
+        <div class="weather-item">
+          <span>🌡️</span>
+          <div>
+            <small>Temperature</small>
+            <strong>
+              {{ data.current_weather.temperature }} °C
+            </strong>
+          </div>
+        </div>
+
+        <div class="weather-item">
+          <span>💧</span>
+          <div>
+            <small>Humidity</small>
+            <strong>
+              {{ data.current_weather.humidity }} %
+            </strong>
+          </div>
+        </div>
+
+        <div class="weather-item">
+          <span>🌧️</span>
+          <div>
+            <small>Rain</small>
+            <strong>
+              {{ data.current_weather.rain }} mm
+            </strong>
+          </div>
+        </div>
+
+        <div class="weather-item">
+          <span>💨</span>
+          <div>
+            <small>Wind</small>
+            <strong>
+              {{ data.current_weather.wind_speed }} km/h
+            </strong>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="risk-section">
+
+      <div class="section-heading">
+        <span class="section-label">RISK ANALYSIS</span>
+        <h2>Potential Threats</h2>
+      </div>
+
+
+      <div class="risk-grid">
+
+        <article class="risk-card">
+
+          <div class="risk-header">
+            <div class="risk-icon">🌊</div>
+
+            <div>
+              <h3>Flood</h3>
+              <span
+                class="badge"
+                [ngClass]="riskClass(data.risks.flood.level)"
+              >
+                {{ data.risks.flood.level }}
+              </span>
+            </div>
+
+            <strong class="percentage">
+              {{ data.risks.flood.score }}%
+            </strong>
+          </div>
+
+          <div class="progress">
+            <div
+              [style.width.%]="data.risks.flood.score"
+            ></div>
+          </div>
+
+          <div class="details">
+            <strong>Why?</strong>
+
+            <p *ngFor="let reason of data.risks.flood.reasons">
+              {{ reason }}
+            </p>
+
+            <strong>What to do</strong>
+
+            <ul>
+              <li *ngFor="let action of data.risks.flood.actions">
+                {{ action }}
+              </li>
+            </ul>
+          </div>
+
+        </article>
+
+
+        <article class="risk-card">
+
+          <div class="risk-header">
+            <div class="risk-icon">☀️</div>
+
+            <div>
+              <h3>Drought</h3>
+              <span
+                class="badge"
+                [ngClass]="riskClass(data.risks.drought.level)"
+              >
+                {{ data.risks.drought.level }}
+              </span>
+            </div>
+
+            <strong class="percentage">
+              {{ data.risks.drought.score }}%
+            </strong>
+          </div>
+
+          <div class="progress">
+            <div
+              [style.width.%]="data.risks.drought.score"
+            ></div>
+          </div>
+
+          <div class="details">
+            <strong>Why?</strong>
+
+            <p *ngFor="let reason of data.risks.drought.reasons">
+              {{ reason }}
+            </p>
+
+            <strong>What to do</strong>
+
+            <ul>
+              <li *ngFor="let action of data.risks.drought.actions">
+                {{ action }}
+              </li>
+            </ul>
+          </div>
+
+        </article>
+
+
+        <article class="risk-card">
+
+          <div class="risk-header">
+            <div class="risk-icon">🔥</div>
+
+            <div>
+              <h3>Heatwave</h3>
+              <span
+                class="badge"
+                [ngClass]="riskClass(data.risks.heatwave.level)"
+              >
+                {{ data.risks.heatwave.level }}
+              </span>
+            </div>
+
+            <strong class="percentage">
+              {{ data.risks.heatwave.score }}%
+            </strong>
+          </div>
+
+          <div class="progress">
+            <div
+              [style.width.%]="data.risks.heatwave.score"
+            ></div>
+          </div>
+
+          <div class="details">
+            <strong>Why?</strong>
+
+            <p *ngFor="let reason of data.risks.heatwave.reasons">
+              {{ reason }}
+            </p>
+
+            <strong>What to do</strong>
+
+            <ul>
+              <li *ngFor="let action of data.risks.heatwave.actions">
+                {{ action }}
+              </li>
+            </ul>
+          </div>
+
+        </article>
+
+
+        <article class="risk-card">
+
+          <div class="risk-header">
+            <div class="risk-icon">💨</div>
+
+            <div>
+              <h3>Strong Wind</h3>
+              <span
+                class="badge"
+                [ngClass]="riskClass(data.risks.strong_wind.level)"
+              >
+                {{ data.risks.strong_wind.level }}
+              </span>
+            </div>
+
+            <strong class="percentage">
+              {{ data.risks.strong_wind.score }}%
+            </strong>
+          </div>
+
+          <div class="progress">
+            <div
+              [style.width.%]="data.risks.strong_wind.score"
+            ></div>
+          </div>
+
+          <div class="details">
+            <strong>Why?</strong>
+
+            <p *ngFor="let reason of data.risks.strong_wind.reasons">
+              {{ reason }}
+            </p>
+
+            <strong>What to do</strong>
+
+            <ul>
+              <li *ngFor="let action of data.risks.strong_wind.actions">
+                {{ action }}
+              </li>
+            </ul>
+          </div>
+
+        </article>
+
+
+        <article class="risk-card">
+
+          <div class="risk-header">
+            <div class="risk-icon">❄️</div>
+
+            <div>
+              <h3>Frost / Cold</h3>
+              <span
+                class="badge"
+                [ngClass]="riskClass(data.risks.frost.level)"
+              >
+                {{ data.risks.frost.level }}
+              </span>
+            </div>
+
+            <strong class="percentage">
+              {{ data.risks.frost.score }}%
+            </strong>
+          </div>
+
+          <div class="progress">
+            <div
+              [style.width.%]="data.risks.frost.score"
+            ></div>
+          </div>
+
+          <div class="details">
+            <strong>Why?</strong>
+
+            <p *ngFor="let reason of data.risks.frost.reasons">
+              {{ reason }}
+            </p>
+
+            <strong>What to do</strong>
+
+            <ul>
+              <li *ngFor="let action of data.risks.frost.actions">
+                {{ action }}
+              </li>
+            </ul>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="forecast-card">
+
+      <div class="section-heading">
+        <span class="section-label">7-DAY OUTLOOK</span>
+        <h2>Weather Forecast</h2>
+      </div>
+
+      <div class="forecast-grid">
+
+        <div
+          class="forecast-day"
+          *ngFor="let date of data.forecast.dates; let i = index"
+        >
+          <strong>{{ date | date:'EEE' }}</strong>
+
+          <span>
+            {{ date | date:'dd MMM' }}
+          </span>
+
+          <div class="forecast-icon">
+            🌤️
+          </div>
+
+          <strong>
+            {{ data.forecast.max_temperature[i] }}°
+          </strong>
+
+          <small>
+            {{ data.forecast.rainfall[i] }} mm rain
+          </small>
+
+          <small>
+            {{ data.forecast.max_wind[i] }} km/h wind
+          </small>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <div class="disclaimer">
+      ⚠️ {{ data.warning }}
+    </div>
+
+  </ng-container>
+
+</div>

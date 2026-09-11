@@ -30,15 +30,15 @@ export class FarmService {
 
   // =========================
   // CHECK SOIL
-  // Backend expects:
-  // GET /soil/analyze?lat=...&lon=...
   // =========================
-analyzeSoil(lat: number, lon: number): Observable<any> {
-  return this.api.get(
-    '/soil/analyze?lat=' + encodeURIComponent(lat) +
-    '&lon=' + encodeURIComponent(lon)
-  );
-}
+  analyzeSoil(lat: number, lon: number): Observable<any> {
+    return this.api.get(
+      '/soil/analyze?lat=' +
+      encodeURIComponent(lat) +
+      '&lon=' +
+      encodeURIComponent(lon)
+    );
+  }
 
   // =========================
   // DISEASE DETECTION
@@ -55,6 +55,13 @@ analyzeSoil(lat: number, lon: number): Observable<any> {
   }
 
   // =========================
+  // YIELD PREDICTION
+  // =========================
+  predictYield(input: any): Observable<any> {
+    return this.api.post('/yield/predict', input);
+  }
+
+  // =========================
   // WEATHER
   // =========================
   weather(lat: number, lon: number): Observable<any> {
@@ -63,6 +70,40 @@ analyzeSoil(lat: number, lon: number): Observable<any> {
       encodeURIComponent(lat.toString()) +
       '&lon=' +
       encodeURIComponent(lon.toString())
+    );
+  }
+
+  // =========================
+  // DISASTER PREDICTION
+  // =========================
+  disaster(lat: number, lon: number): Observable<any> {
+    return this.api.get(
+      '/disaster/predict?lat=' +
+      encodeURIComponent(lat) +
+      '&lon=' +
+      encodeURIComponent(lon)
+    );
+  }
+
+  // =========================
+  // LOCATION SEARCH
+  // =========================
+  searchLocation(query: string): Observable<any> {
+    return this.api.get(
+      '/disaster/search?query=' +
+      encodeURIComponent(query)
+    );
+  }
+
+  // =========================
+  // LIVE LOCATION NAME
+  // =========================
+  location(lat: number, lon: number): Observable<any> {
+    return this.api.get(
+      '/disaster/location?lat=' +
+      encodeURIComponent(lat) +
+      '&lon=' +
+      encodeURIComponent(lon)
     );
   }
 }

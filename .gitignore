@@ -20,3 +20,7 @@ frontend/dist/
 # Training data
 PlantVillage/
 training/data/
+
+# Raw intermediate location downloads
+backend/data/IN.zip
+backend/data/india/
