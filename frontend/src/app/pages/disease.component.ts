@@ -1015,6 +1015,13 @@ export class DiseaseComponent {
 
         if (!response) {
           this.error = 'No response from the plant analysis backend.';
+          this.result = null;
+          return;
+        }
+
+        if (response.is_plant === false || response.success === false) {
+          this.error = response.error || 'Non-plant image detected. Please upload a clear photo of a crop leaf or plant.';
+          this.result = null;
           return;
         }
 
@@ -1022,6 +1029,7 @@ export class DiseaseComponent {
           this.error = typeof response.detail === 'string'
             ? response.detail
             : 'The plant image could not be analyzed.';
+          this.result = null;
           return;
         }
 
@@ -1029,26 +1037,22 @@ export class DiseaseComponent {
           this.error = typeof response.error === 'string'
             ? response.error
             : 'The plant image could not be analyzed.';
+          this.result = null;
           return;
         }
 
+        this.error = '';
         this.result = response;
       },
       error: (err: any) => {
         this.loading = false;
-        // Graceful fallback for offline demo preview
-        this.result = {
-          disease: 'Tomato Early Blight (Alternaria solani)',
-          confidence: 94.6,
-          severity: 'Moderate',
-          description: 'Dark, concentric rings (bullseye target patterns) visible across foliar tissue with chlorotic yellow halo.',
-          symptoms: 'Brownish-black necrotic spots on older leaves, lower foliage yellowing and premature leaf drop.',
-          solution: 'Apply Mancozeb 75% WP @ 2g/L or Chlorothalonil. Alternate with Bio-fungicide Trichoderma viride.',
-          prevention: 'Drip irrigation at soil base instead of overhead sprinkler. Ensure 2-foot plant spacing for air circulation.',
-          model: 'KrishiAI Vision Net v2.4',
-          model_connected: true,
-          filename: this.file?.name || 'leaf_sample.jpg'
-        };
+        const msg = err?.error?.detail || err?.error?.error || err?.message;
+        if (msg && typeof msg === 'string') {
+          this.error = msg;
+        } else {
+          this.error = 'Unable to analyze image. Please ensure your photo clearly captures a plant leaf.';
+        }
+        this.result = null;
       }
     });
   }

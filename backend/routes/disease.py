@@ -18,7 +18,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
 
 def _analyze_with_gemini(image_bytes: bytes, content_type: str) -> dict:
     """
-    Use Gemini Vision to detect plant diseases.
+    Use Gemini Vision to detect plant diseases with strict Non-Plant / Human gatekeeping.
     Falls back to a safe offline result if the API is unavailable.
     """
     import httpx, json
@@ -29,27 +29,54 @@ def _analyze_with_gemini(image_bytes: bytes, content_type: str) -> dict:
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
     mime_type = content_type if content_type.startswith("image/") else "image/jpeg"
 
-    prompt = """You are an expert plant pathologist and agronomist.
-Analyze this plant leaf image carefully and respond ONLY with valid JSON in this exact format:
+    prompt = """You are a strict agricultural AI vision inspector and plant pathologist.
 
+YOUR FIRST CRITICAL TASK: Verify whether the uploaded photograph contains a plant leaf, crop, fruit, vegetable, flower, tree foliage, or agricultural plant specimen.
+
+CHECK FOR NON-PLANT SUBJECTS:
+- If the image contains a HUMAN (face, selfie, person, human body/skin/hands, portrait, clothing),
+- Or an ANIMAL (dog, cat, cow, bird, pet, insect not on a leaf),
+- Or an INANIMATE OBJECT (vehicle, car, phone, computer, furniture, indoor room, wall, road, appliance, document, screenshot, meme, drawing),
+- Or anything that is NOT primarily a real plant/crop/leaf,
+YOU MUST REJECT IT IMMEDIATELY with this exact JSON format:
 {
+  "is_plant": false,
+  "detected_subject": "<brief description of what is actually shown, e.g. 'Human Person / Face', 'Animal / Dog', 'Indoor Room', 'Car / Vehicle', 'Electronic Device'>",
+  "error_message": "Non-plant image detected (<detected_subject>). Please upload a clear photo of a crop leaf or plant.",
+  "plant_name": "Not a Plant",
+  "plant_confidence": 0,
+  "disease_name": "N/A",
+  "disease_confidence": 0,
+  "status": "Non-Plant Detected",
+  "symptoms": [],
+  "organic_treatment": [],
+  "chemical_treatment": [],
+  "severity": "None",
+  "prevention": ["Please upload a clear photo of a plant leaf or crop for health diagnosis."]
+}
+
+ONLY IF THE IMAGE IS GENUINELY A PLANT LEAF OR AGRICULTURAL CROP:
+Respond with this exact JSON format:
+{
+  "is_plant": true,
+  "detected_subject": "<scientific or common plant name>",
   "plant_name": "<scientific or common plant name>",
   "plant_confidence": <0-100 number>,
-  "disease_name": "<disease name or 'Healthy - No disease detected'>",
+  "disease_name": "<specific disease name, e.g. 'Tomato Early Blight', 'Rice Blast', or 'Healthy - No disease detected'>",
   "disease_confidence": <0-100 number>,
   "status": "<'Healthy Plant' or 'Disease Detected'>",
   "symptoms": ["<symptom 1>", "<symptom 2>", "<symptom 3>"],
   "organic_treatment": ["<organic remedy 1>", "<organic remedy 2>", "<organic remedy 3>"],
   "chemical_treatment": ["<chemical remedy 1>", "<chemical remedy 2>", "<chemical remedy 3>"],
-  "severity": "<'Low' or 'Moderate' or 'High'>",
+  "severity": "<'Low' or 'Moderate' or 'High' or 'None'>",
   "prevention": ["<prevention tip 1>", "<prevention tip 2>"]
 }
 
-Rules:
-- If plant is healthy, set disease_name to 'Healthy - No disease detected', status to 'Healthy Plant', disease_confidence to 0.
-- Be specific about disease names (e.g. 'Tomato Late Blight', 'Wheat Rust', 'Rice Blast').
-- Provide practical, actionable Indian agricultural remedies.
-- Respond ONLY with JSON, no markdown, no explanation."""
+Strict Rules:
+- NEVER diagnose a human or non-plant image as a plant disease.
+- If plant is healthy, set disease_name to 'Healthy - No disease detected', status to 'Healthy Plant', disease_confidence to 0, severity to 'None'.
+- For diseases, provide actionable Indian agricultural remedies with practical dosages.
+- Output ONLY valid JSON, no markdown codeblocks, no text outside JSON."""
 
     payload = {
         "contents": [{
@@ -64,7 +91,7 @@ Rules:
             ]
         }],
         "generationConfig": {
-            "temperature": 0.2,
+            "temperature": 0.1,
             "maxOutputTokens": 1024,
             "responseMimeType": "application/json"
         }
@@ -126,6 +153,7 @@ def _offline_result(reason: str) -> dict:
     Shows a clear message without crashing.
     """
     return {
+        "is_plant": True,
         "plant_name": "Plant (AI offline)",
         "plant_confidence": 0,
         "disease_name": "Analysis unavailable",
@@ -163,11 +191,57 @@ async def predict(file: UploadFile = File(...)):
     try:
         result = _analyze_with_gemini(image_bytes, file.content_type)
 
-        plant_name = result.get("plant_name", "Unknown plant")
-        plant_confidence = float(result.get("plant_confidence", 0))
-        disease_name = result.get("disease_name", "No disease detected")
-        disease_confidence = float(result.get("disease_confidence", 0))
+        is_plant = result.get("is_plant", True)
         status = result.get("status", "Unknown")
+        detected_subject = result.get("detected_subject", "")
+        plant_name = result.get("plant_name", "Unknown plant")
+        disease_name = result.get("disease_name", "No disease detected")
+
+        # Double check for non-plant / human indicators in response
+        non_plant_keywords = [
+            "human", "person", "man", "woman", "face", "selfie", "people",
+            "body", "skin", "animal", "dog", "cat", "car", "vehicle",
+            "building", "room", "not a plant", "indoor", "gadget", "phone"
+        ]
+        
+        detected_subject_lower = str(detected_subject).lower()
+        plant_name_lower = str(plant_name).lower()
+        
+        if (
+            not is_plant
+            or status == "Non-Plant Detected"
+            or any(k in detected_subject_lower for k in non_plant_keywords)
+            or any(k in plant_name_lower for k in ["not a plant", "human", "person", "selfie", "face"])
+        ):
+            subject = detected_subject or "Non-Plant Subject / Human"
+            err_msg = (
+                result.get("error_message")
+                or f"Non-plant image detected ({subject}). Please upload a clear photo of a plant leaf or crop."
+            )
+            return {
+                "success": False,
+                "is_plant": False,
+                "error": err_msg,
+                "status": "Non-Plant Detected",
+                "detected_subject": subject,
+                "filename": file.filename or "uploaded_image.jpg",
+                "plant": "Not a Plant",
+                "plant_confidence": 0.0,
+                "disease": "Non-Plant Subject Detected",
+                "confidence": 0.0,
+                "severity": "None",
+                "symptoms": [f"The uploaded image does not appear to contain a plant leaf. Detected: {subject}."],
+                "actions": ["Please upload or capture a clear photo of an agricultural plant or leaf."],
+                "solution": ["Please upload a clear photo of an agricultural plant leaf."],
+                "organic_treatment": [],
+                "chemical_treatment": [],
+                "prevention": ["Ensure the camera is focused directly on the crop foliage."],
+                "model": "KrishiAI Vision (Gemini)",
+                "model_connected": True
+            }
+
+        plant_confidence = float(result.get("plant_confidence", 0))
+        disease_confidence = float(result.get("disease_confidence", 0))
         symptoms = result.get("symptoms", [])
         organic = result.get("organic_treatment", [])
         chemical = result.get("chemical_treatment", [])
@@ -184,6 +258,7 @@ async def predict(file: UploadFile = File(...)):
 
         return {
             "success": True,
+            "is_plant": True,
             "status": status,
             "filename": file.filename or "uploaded_image.jpg",
 
