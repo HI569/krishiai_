@@ -256,6 +256,39 @@ footer p {
   color: var(--text-muted);
 }
 
+.footer-contact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: var(--neon-green);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(125, 255, 111, 0.05);
+  border: 1px solid rgba(125, 255, 111, 0.15);
+}
+
+.footer-link:hover {
+  background: rgba(125, 255, 111, 0.15);
+  border-color: rgba(125, 255, 111, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.footer-dot {
+  color: #314436;
+  font-size: 14px;
+}
+
 /* MOBILE NAV */
 .mobile-nav {
   display: none;
